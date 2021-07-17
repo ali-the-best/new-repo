@@ -1,15 +1,54 @@
-// create an express app
-const express = require("express")
-const app = express()
+const express = require("express");
 
-// use the express-static middleware
-app.use(express.static("public"))
+const app = express();
 
-// define the first route
-app.get("/", function (req, res) {
-  res.send("<h1>Hello World!</h1>")
+var pdf = require("pdf-creator-node");
+
+const fs = require('fs');
+
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
+
+app.post('/',async (req, res) => {
+
+    let requestHtml = req.body.html;
+
+    var options = {
+        format: "A3",
+        orientation: "portrait",
+        border: "10mm",
+        // header: {
+        //     height: "45mm",
+        //     contents: ''
+        // },
+        // footer: {
+        //     height: "28mm",
+        //     contents: {
+        //         first: 'Cover page',
+        //         2: 'Second page',
+        //         default: '',
+        //         last: 'Last Page'
+        //     }
+        // }
+    };
+    
+    var document = {
+        html: requestHtml,
+        path: "./data.pdf",
+        type: "",
+      };
+    
+    pdf
+      .create(document, options)
+      .then((res) => {
+        res.sendFile('./data.pdf' , { root : __dirname});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+      
+
 })
 
-// start the server listening for requests
-app.listen(process.env.PORT || 3000, 
-	() => console.log("Server is running..."));
+app.listen(process.env.PORT || 3000)
