@@ -31,24 +31,23 @@ app.post('/',async (req, res) => {
         //     }
         // }
     };
-    
+    let name = (Math.random() * 18324873854367).toString();
     var document = {
         html: requestHtml,
-        path: "./data.pdf",
+        path: `./pdfs/${name}.pdf`,
         type: "",
       };
     
     pdf
       .create(document, options)
       .then((res) => {
-        res.sendFile('./data.pdf' , { root : __dirname});
+        // res.sendFile('./pdfs/data.pdf' , { root : __dirname});
+        let link = `${req.url}/pdfs/${name}.pdf`
+        res.download(link);
       })
       .catch((error) => {
         console.error(error);
       });
-
-      
-
 })
 
 app.listen(process.env.PORT || 3000)
