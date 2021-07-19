@@ -55,9 +55,6 @@ app.post('/',async (req, res) => {
           'link':link
         }));
       })
-      .catch((error) => {
-        console.error(error);
-      });
 })
 
 app.listen(process.env.PORT || 3000)
