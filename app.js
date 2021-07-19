@@ -9,6 +9,14 @@ const fs = require('fs');
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
+fs.readdir('./pdfs',(err, files) => {
+  for (let file of files) {
+    app.get(`/pdfs/${file}`, (req, res) => {
+      res.download(file);
+    })
+  }
+})
+
 app.post('/',async (req, res) => {
 
     let requestHtml = req.body.html;
@@ -43,7 +51,9 @@ app.post('/',async (req, res) => {
       .then((res) => {
         // res.sendFile('./pdfs/data.pdf' , { root : __dirname});
         let link = `${req.url}/pdfs/${name}.pdf`
-        res.download(link);
+        res.send(JSON.stringify({
+          'link':link
+        }));
       })
       .catch((error) => {
         console.error(error);
