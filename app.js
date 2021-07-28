@@ -7,17 +7,27 @@ var pdf = require("pdf-creator-node");
 const fs = require('fs');
 
 app.use(express.urlencoded({extended: true}));
+
 app.use(express.json());
 
+app.use(express.static('pdfs'));
+
+app.use(express.static('public'));
+app.get('/', (req, res) => {
+  res.sendFile('index.html')
+})
 fs.readdir('./pdfs',(err, files) => {
+  if(err){
+    console.log(err)
+  }
   for (let file of files) {
-    app.get(`/pdfs/${file}`, (req, res) => {
+    app.get(`/${file}`, (req, res) => {
       res.download(file);
     })
   }
 })
 
-app.post('/',async (req, res) => {
+app.post('/', (req, res) => {
 
     let requestHtml = req.body.html;
 
@@ -48,13 +58,19 @@ app.post('/',async (req, res) => {
     
     pdf
       .create(document, options)
-      .then((res) => {
-        // res.sendFile('./pdfs/data.pdf' , { root : __dirname});
-        let link = `${req.url}/pdfs/${name}.pdf`
-        res.send(JSON.stringify({
-          'link':link
-        }));
+      .catch(err => console.log(err))
+      .then(() => {
+        let link = `${name}.pdf`;
+        console.log(link)
+        res.send(link)
+        setTimeout( () => {
+          fs.unlink('./pdfs/' + link, function (err) {            
+            if (err) {                                                 
+                console.error(err);                                    
+            }                                                                                
+        });    
+        },3 * 60 * 1000);
       })
 })
-
-app.listen(process.env.PORT || 3000)
+// process.env.PORT || 
+app.listen(3000)
