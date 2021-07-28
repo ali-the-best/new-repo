@@ -14,7 +14,7 @@ app.use(express.static('pdfs'));
 
 app.use(express.static('public'));
 app.get('/', (req, res) => {
-  res.sendFile('index.html')
+  res.send('<h1>hello</h1>')
 })
 fs.readdir('./pdfs',(err, files) => {
   if(err){
